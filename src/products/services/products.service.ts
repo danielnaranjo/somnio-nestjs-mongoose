@@ -1,31 +1,51 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Product } from '../entities/product.entity';
-//import { CreateProductDto, UpdateProductDto } from '../dto';
+import { Pagination } from 'shared/types/pagination';
+import { CreateProductDto } from '../dto';
+//import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(this.constructor.name);
+
   constructor(
     @Inject('PRODUCTS_MODEL') private readonly productsModel: Model<Product>,
+    //@Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  findAll() {
-    return this.productsModel.find().exec();
+  async findAll(options: Pagination) {
+    //const productCacheKey = `product_${JSON.stringify(options)}`;
+    /* if (await this.cacheManager.get(productCacheKey)) {
+      this.logger.log('Cache hit', productCacheKey);
+      return await this.cacheManager.get(productCacheKey);
+    } */
+
+    this.logger.log(options);
+    const refreshData = await this.productsModel
+      .find(options.filter || {})
+      .skip(Number(options.offset) || 0)
+      .limit(Number(options.limit) || 10)
+      .sort(
+        options.sortBy
+          ? {
+              [options.sortBy]:
+                options.orderBy === 'desc' || options.orderBy === -1 ? -1 : 1,
+            }
+          : {},
+      )
+      .exec();
+    //await this.cacheManager.set(productCacheKey, refreshData);
+    return refreshData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    this.logger.log(id);
+    return await this.productsModel.findById(id).exec();
   }
 
-  /*   create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
-  } */
-
-  /*   update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  create(createProductDto: CreateProductDto[]) {
+    this.logger.log(createProductDto.length);
+    return this.productsModel.insertMany(createProductDto);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  } */
 }

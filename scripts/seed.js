@@ -34,6 +34,7 @@ const categorySchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
+  sku: { type: String },
   price: { type: Number, required: true },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -78,6 +79,7 @@ for (let i = 0; i < batchSize; i++) {
     seedProducts.push({
         name: faker.commerce.product(),
         description: faker.commerce.productDescription(),
+        sku: faker.commerce.isbn(),
         price: faker.commerce.price(),
         stock: Math.random(),
         tags: [faker.commerce.productAdjective()],
