@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: somnio-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: somnio
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+  nestjs-app:
+    build: .
+    container_name: somnio-nestjs
+    environment:
+      MONGO_URI: mongodb://root:rootpassword@mongo:27017/somnio?authSource=admin
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+volumes:
+  mongo-data:
+    driver: local
