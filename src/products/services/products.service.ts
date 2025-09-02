@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Product } from '../entities/product.entity';
 import { Pagination } from 'shared/types/pagination';
-import { CreateProductDto } from '../dto';
+import { CreateProductDto, UpdateProductDto } from '../dto';
 @Injectable()
 export class ProductsService {
   private readonly logger = new Logger(this.constructor.name);
@@ -12,7 +12,7 @@ export class ProductsService {
   ) {}
 
   async findAll(options: Pagination) {
-    this.logger.log(options);
+    this.logger.log(JSON.stringify(options));
     const refreshData = await this.productsModel
       .find(options.filter || {})
       .skip(Number(options.offset) || 0)
@@ -34,8 +34,16 @@ export class ProductsService {
     return await this.productsModel.findById(id).exec();
   }
 
-  create(createProductDto: CreateProductDto[]) {
+  async create(createProductDto: CreateProductDto[]) {
     this.logger.log(createProductDto.length);
-    return this.productsModel.insertMany(createProductDto);
+    return await this.productsModel.insertMany(createProductDto);
+  }
+
+  async update(id: any, updateProductDto: UpdateProductDto) {
+    this.logger.log(id, updateProductDto);
+    return await this.productsModel.updateOne(
+      { _id: new Types.ObjectId('id') },
+      updateProductDto,
+    );
   }
 }
