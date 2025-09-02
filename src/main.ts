@@ -26,4 +26,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+bootstrap().catch((err: any) => console.error(err.message));
