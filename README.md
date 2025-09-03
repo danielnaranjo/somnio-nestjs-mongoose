@@ -1,7 +1,6 @@
 # SOMNIO Challenge
 
 
-
 ### First step
 Set MongoBD URI
 
@@ -10,7 +9,8 @@ MONGODB_URI=mongodb://localhost:27017/nest # example
 ```
 Then, run...
 ```
-npm install 
+npm install
+node scripts/seed.js # this will drop your database
 ```
 
 ### Develop
