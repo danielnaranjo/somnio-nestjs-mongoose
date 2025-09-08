@@ -15,7 +15,7 @@ export class ProductsService {
     this.logger.log(JSON.stringify(options));
     const refreshData = await this.productsModel
       .find(options.filter || {})
-      .skip(Number(options.offset) || 0)
+      .skip(Number(options.offset) || 1)
       .limit(Number(options.limit) || 10)
       .sort(
         options.sortBy
@@ -26,7 +26,12 @@ export class ProductsService {
           : {},
       )
       .exec();
-    return refreshData;
+    return {
+      total: await this.productsModel
+        .countDocuments(options.filter || {})
+        .exec(),
+      results: refreshData,
+    };
   }
 
   async findOne(id: string) {
