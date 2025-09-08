@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="productApp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnio Store</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/angular.js"></script>
+    <script src="js/angular-route.min.js"></script>
+    <script src="/js/main.js"></script>
+  </head>
+
+  <body>
+    <div ng-controller="AppController">
+      <app-header
+        search-query="searchQuery"
+        on-search="onSearch()"
+      ></app-header>
+
+      <main class="main-content">
+        <div class="container">
+          <h1 class="page-title">Featured Products</h1>
+
+          <loading-spinner
+            ng-if="isLoading && products.length === 0"
+          ></loading-spinner>
+
+          <error-message
+            ng-if="error"
+            message="error"
+            on-retry="retryLoad()"
+          ></error-message>
+
+          <div ng-if="!isLoading || products.length > 0">
+            <product-grid products="displayedProducts"></product-grid>
+
+            <no-results
+              ng-if="products.length === 0 && !isLoading && searchQuery"
+            ></no-results>
+
+            <load-more-button
+              ng-if="canLoadMore()"
+              on-load-more="loadMore()"
+              is-loading="isLoading"
+            ></load-more-button>
+
+            <div
+              ng-if="products.length > 0 && !canLoadMore()"
+              style="text-align: center; color: #64748b; margin: 2rem 0"
+            >
+              You've seen all available products!
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

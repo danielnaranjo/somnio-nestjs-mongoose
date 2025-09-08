@@ -13,6 +13,7 @@ async function bootstrap() {
       colors: true,
     }),
   });
+  app.setGlobalPrefix('api');
   app.use(helmet());
   app.enableCors();
 
@@ -22,9 +23,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('doc', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 bootstrap().catch((err: any) => console.error(err.message));
